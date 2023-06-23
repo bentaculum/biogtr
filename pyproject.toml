@@ -22,6 +22,12 @@ dependencies = [
     "torch >= 2.0.0",
     "lightning",
     "imageio",
+    "torchvision",
+    "albumentations",
+    "pandas",
+    "sleap-io",
+    "omegaconf",
+    "hydra-core",
 ]
 dynamic = ["version"]
 
