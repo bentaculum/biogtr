@@ -28,6 +28,8 @@ dependencies = [
     "sleap-io",
     "omegaconf",
     "hydra-core",
+    "pre-commit",
+    "black",
 ]
 dynamic = ["version"]
 
