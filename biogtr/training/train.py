@@ -90,7 +90,9 @@ def main(cfg: DictConfig):
     _ = callbacks.append(train_cfg.get_early_stopping())
 
     accelerator = "gpu" if torch.cuda.is_available() else "cpu"
-    devices = torch.cuda.device_count() if torch.cuda.is_available() else cpu_count()
+    # devices = torch.cuda.device_count() if torch.cuda.is_available() else cpu_count()
+    # TODO bring back multi-gpu training
+    devices = 1
 
     trainer = train_cfg.get_trainer(
         callbacks,

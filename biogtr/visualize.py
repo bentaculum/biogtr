@@ -4,6 +4,7 @@ from copy import deepcopy
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 from omegaconf import DictConfig
+from pathlib import Path
 
 import seaborn as sns
 import imageio
@@ -12,6 +13,9 @@ import pandas as pd
 import numpy as np
 import cv2
 import imageio
+import tifffile
+
+from biogtr.datasets.data_utils import LazyTiffStack
 
 
 palette = sns.color_palette("tab10")
@@ -64,7 +68,7 @@ def annotate_video(
     key: str,
     color_palette=palette,
     trails: bool = True,
-    boxes: int = 64,
+    boxes: int = 0,
     names: bool = True,
     centroids: bool = True,
     poses=False,
@@ -93,7 +97,7 @@ def annotate_video(
     if trails:
         track_trails = {}
 
-    for i in sorted(labels["Frame"]):
+    for i in tqdm(sorted(labels["Frame"]), desc="Annotating video"):
         frame = video[i]
         if frame.shape[0] == 1 or frame.shape[-1] == 1:
             frame = cv2.cvtColor((frame * 255).astype(np.uint8), cv2.COLOR_GRAY2RGB)
@@ -278,11 +282,27 @@ def bold(val: float, thresh: float = 0.01) -> str:
 def main(cfg: DictConfig):
     """Main function for visualizations script.
 
-    Takes in a path to a video + labels file, annotates a video and saves it to the specified path
+    Takes in a path to a video + labels file, annotates a video and saves it to
+    the specified path
     """
     labels = pd.read_csv(cfg.labels_path)
-    vid_reader = imageio.get_reader(cfg.vid_path, "ffmpeg")
-    video = np.stack([vid_reader.get_data(i) for i in sorted(labels["Frame"].unique())])
+    if cfg.vid_path.endswith(".mp4"):
+        vid_reader = imageio.get_reader(cfg.vid_path, "ffmpeg")
+        video = np.stack(
+            [vid_reader.get_data(i) for i in sorted(labels["Frame"].unique())]
+        )
+    elif cfg.vid_path.endswith(".tif"):
+        vid_reader = LazyTiffStack(cfg.vid_path)
+        video = np.stack(
+            [vid_reader.get_section(i) for i in tqdm(sorted(labels["Frame"].unique()))]
+        )
+    elif Path(cfg.vid_path).is_dir():
+        video = np.stack(
+            [tifffile.imread(p) for p in tqdm(sorted(Path(cfg.vid_path).glob("*.tif")))]
+        )
+    else:
+        raise ValueError(f"Video path {cfg.vid_path} is not a valid video file")
+
     print(f"Video shape: {video.shape}")
     annotated_frames = annotate_video(video, labels, **cfg.annotate)
     save_vid(annotated_frames, **cfg.save)

@@ -30,7 +30,8 @@ def inference(
     Return:
         List of DataFrames containing prediction results for each video
     """
-    num_videos = len(dataloader.dataset.slp_files)
+    # num_videos = len(dataloader.dataset.slp_files)
+    num_videos = len(dataloader.dataset.videos)
     trainer = pl.Trainer(devices=1, limit_predict_batches=3)
     preds = trainer.predict(model, dataloader)
 
@@ -112,7 +113,7 @@ def main(cfg: DictConfig):
         os.makedirs(outdir, exist_ok=True)
         outpath = os.path.join(
             outdir,
-            f"{Path(pred_cfg.cfg.dataset.test_dataset.slp_files[i]).stem}_tracking_results",
+            f"{Path(pred_cfg.cfg.dataset.test_dataset.raw_images[i][0]).stem}_tracking_results",
         )
         print(f"Saving to {outpath}")
         # TODO: Figure out how to overwrite sleap labels instance labels w pred instance labels then save as a new slp file

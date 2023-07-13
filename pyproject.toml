@@ -30,6 +30,8 @@ dependencies = [
     "hydra-core",
     "pre-commit",
     "black",
+    "wandb",
+    "imagecodecs",
 ]
 dynamic = ["version"]
 
