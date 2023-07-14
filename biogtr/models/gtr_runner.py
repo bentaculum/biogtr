@@ -4,8 +4,8 @@ from typing import Any, Optional
 from pytorch_lightning.utilities.types import STEP_OUTPUT
 import torch
 from biogtr.inference.tracker import Tracker
-from biogtr.inference import metrics
 from biogtr.models.global_tracking_transformer import GlobalTrackingTransformer
+from biogtr.inference import metrics
 from biogtr.training.losses import AssoLoss
 from biogtr.models.model_utils import init_optimizer, init_scheduler
 from pytorch_lightning import LightningModule

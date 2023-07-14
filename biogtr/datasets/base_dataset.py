@@ -68,7 +68,10 @@ class BaseDataset(Dataset):
 
             self.chunked_frame_idx, self.label_idx = [], []
             for i, (split, frame_idx) in enumerate(zip(self.chunks, self.frame_idx)):
-                frame_idx_split = torch.split(frame_idx, self.clip_length)
+                num_chunks = len(frame_idx) // self.clip_length
+                frame_idx_split = torch.split(
+                    frame_idx[: num_chunks * self.clip_length], self.clip_length
+                )
                 self.chunked_frame_idx.extend(frame_idx_split)
                 self.label_idx.extend(len(frame_idx_split) * [i])
         else:

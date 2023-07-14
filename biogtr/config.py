@@ -7,6 +7,7 @@ from biogtr.models.global_tracking_transformer import GlobalTrackingTransformer
 from biogtr.models.gtr_runner import GTRRunner
 from biogtr.models.model_utils import init_optimizer, init_scheduler, init_logger
 from biogtr.training.losses import AssoLoss
+
 from omegaconf import DictConfig, OmegaConf
 from pprint import pprint
 from typing import Union, Iterable
